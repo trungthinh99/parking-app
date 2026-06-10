@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>주차실태조사 초대</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #238aaf;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 24px;
+        text-align: center;
+      }
+      .card {
+        background: #fff;
+        color: #151515;
+        border-radius: 16px;
+        padding: 24px;
+        max-width: 360px;
+        width: 100%;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0 0 8px;
+      }
+      p {
+        font-size: 14px;
+        color: #454545;
+        margin: 0 0 16px;
+      }
+      a.btn {
+        display: inline-block;
+        background: #238aaf;
+        color: #fff;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 22px;
+        font-weight: 600;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>앱을 여는 중...</h1>
+      <p id="msg">잠시만 기다려주세요.</p>
+      <a id="storeBtn" class="btn" style="display: none" href="#">앱 설치하기</a>
+    </div>
+    <script>
+      // Play Store / App Store URLs — replace after publishing
+      var PLAY_STORE_URL =
+        "https://play.google.com/store/apps/details?id=com.psys.parking";
+      var APP_STORE_URL = "https://apps.apple.com/app/idXXXXXXXXX";
+      var APP_SCHEME = "parkingmobile";
+
+      var ua = navigator.userAgent || "";
+      var isAndroid = /android/i.test(ua);
+      var isIOS = /iphone|ipad|ipod/i.test(ua);
+      var msg = document.getElementById("msg");
+      var btn = document.getElementById("storeBtn");
+      var query = window.location.search || "";
+
+      function showStore(url, label) {
+        msg.textContent = "앱이 설치되어 있지 않은 경우 아래 버튼을 눌러 설치해주세요.";
+        btn.href = url;
+        btn.textContent = label;
+        btn.style.display = "inline-block";
+      }
+
+      // Try to open the app via custom URL scheme. If the app is installed
+      // but App Links verification hasn't happened yet (or failed), this
+      // still opens the app. If not installed, the navigation silently fails
+      // and we fall through to the store button below.
+      function tryOpenApp() {
+        window.location.href = APP_SCHEME + "://receive-invite" + query;
+      }
+
+      if (isAndroid || isIOS) {
+        tryOpenApp();
+      }
+
+      // Wait briefly to let App Links / Universal Links intercept first.
+      // If we're still on this page after the timeout, app is not installed.
+      setTimeout(function () {
+        if (isAndroid) {
+          showStore(PLAY_STORE_URL, "Play 스토어에서 설치");
+        } else if (isIOS) {
+          showStore(APP_STORE_URL, "App Store에서 설치");
+        } else {
+          msg.textContent = "모바일 기기에서 이 링크를 열어주세요.";
+        }
+      }, 1500);
+    </script>
+  </body>
+</html>
